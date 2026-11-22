@@ -10,6 +10,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=10.2">
+<style>
+.lb-flip{position:relative;display:block;height:min(78vh,900px);width:calc(min(78vh,900px)*.914);max-width:92vw;margin:0 auto;cursor:pointer;perspective:1600px;transition:width .9s cubic-bezier(.45,.05,.2,1)}
+.lb-flip.is-flipped{width:calc(min(78vh,900px)*.667)}
+.lb-flip .lb-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.45,.05,.2,1)}
+.lb-flip.is-flipped .lb-inner{transform:rotateY(180deg)}
+.lb-flip .lb-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;border-radius:6px}
+.lb-flip .lb-back{transform:rotateY(180deg)}
+.lb-flip img{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover}
+.lb-flip .lb-hint{position:absolute;right:12px;bottom:12px;z-index:3;padding:7px 12px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.04em;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.lb-flip,.lb-flip .lb-inner{transition:none}}
+</style>
 </head>
 <body data-palette="brown">
 <header class="topbar">
@@ -70,6 +81,7 @@
     <article class="job"><div class="job-date">2012.07 — 2012.10</div><div class="job-main"><h3>와이즈포스트 <small>WISEPOST</small></h3><p class="job-role" data-ko="단기 계약" data-en="Contract">단기 계약</p><p data-ko="대림산업 신사업 컨설팅 · 시장조사 및 보고서 작성" data-en="New business consulting for Daelim Industrial; market research and report writing">대림산업 신사업 컨설팅 · 시장조사 및 보고서 작성</p></div><span class="job-no">03</span></article>
     <article class="job"><div class="job-date">2011.04 — 2012.05</div><div class="job-main"><h3>신승산업 <small>SHINSEUNG INDUSTRY</small></h3><p class="job-role" data-ko="사원" data-en="Staff">사원</p><p data-ko="외국 바이어 관리, 계약서 작성, 오더 및 선적 관리" data-en="Overseas buyer relations, contract preparation, order and shipment coordination">외국 바이어 관리, 계약서 작성, 오더 및 선적 관리</p></div><span class="job-no">04</span></article>
   </div>
+  <p class="note" data-ko="※ 경력 내용은 제공해 주신 이력 메모를 바탕으로 정리했습니다." data-en="※ Experience details are based on the career notes provided.">※ 경력 내용은 제공해 주신 이력 메모를 바탕으로 정리했습니다.</p>
 </section>
 
 <section class="education section-pad" id="education">
@@ -129,8 +141,8 @@
         <img src="assets/ai-image-02.png" alt="세럼 제품 광고 이미지" loading="lazy">
         <span class="work-overlay"><small>PRODUCT VISUAL / 02</small><b>Radiance</b><i>↗</i></span>
       </button>
-      <button class="work-card" data-type="image" data-src="assets/ai-image-03.png" data-title="Merry Winter Coffee" data-desc="겨울 시즌 음료를 위한 따뜻한 무드의 포스터 콘셉트.">
-        <img src="assets/ai-image-03.png" alt="겨울 시즌 커피 포스터" loading="lazy">
+      <button class="work-card" data-type="image" data-flip="assets/ai-image-03.png" data-src="assets/cafe-view.png" data-title="Merry Winter Coffee" data-desc="겨울 시즌 음료를 위한 따뜻한 무드의 콘셉트. 이미지를 클릭하면 카페 전경이 회전하며 시즌 음료 포스터가 나타납니다.">
+        <img src="assets/cafe-view.png" alt="눈 내리는 겨울 카페 전경" loading="lazy">
         <span class="work-overlay"><small>SEASONAL CAMPAIGN / 03</small><b>Merry Winter Coffee</b><i>↗</i></span>
       </button>
       <button class="work-card" data-type="image" data-src="assets/ai-image-04.webp" data-title="Summer Sale — A Brighter You" data-desc="햇살과 바다의 분위기를 담은 여름 시즌 프로모션 비주얼.">
@@ -161,5 +173,32 @@
   <div class="lightbox-content"><div id="lightboxMedia"></div><div class="lightbox-info"><span>SELECTED WORK</span><h3 id="lightboxTitle"></h3><p id="lightboxDesc"></p></div></div>
 </div>
 <script src="script.js?v=10.1"></script>
+<script>
+(function(){
+  var media=document.getElementById('lightboxMedia');
+  if(!media)return;
+  var BACK='assets/ai-image-03.png', busy=false;
+  function build(){
+    var img=media.querySelector('img');
+    if(busy||!img||(img.getAttribute('src')||'').indexOf('cafe-view')===-1||media.querySelector('.lb-flip'))return;
+    busy=true;
+    var box=document.createElement('div');
+    box.className='lb-flip';
+    box.setAttribute('role','button');
+    box.setAttribute('aria-label','클릭하면 포스터가 나타납니다');
+    box.innerHTML='<div class="lb-inner"><div class="lb-face lb-front"><img src="assets/cafe-view.png" alt="눈 내리는 겨울 카페 전경"></div>'+
+      '<div class="lb-face lb-back"><img src="'+BACK+'" alt="Merry Winter Coffee 포스터"></div></div>'+
+      '<span class="lb-hint">클릭해서 뒤집기 ↻</span>';
+    box.addEventListener('click',function(e){
+      e.stopPropagation();
+      box.classList.toggle('is-flipped');
+    });
+    media.innerHTML='';
+    media.appendChild(box);
+    busy=false;
+  }
+  new MutationObserver(build).observe(media,{childList:true,subtree:true});
+})();
+</script>
 </body>
 </html>
